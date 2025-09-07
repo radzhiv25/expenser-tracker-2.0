@@ -1,10 +1,5 @@
-import { Layout } from "@/components/layout/Layout";
-import { HomePage } from "@/components/pages/HomePage";
+import LandingWrapper from "@/components/LandingWrapper";
 
 export default function LandingPage() {
-  return (
-    <Layout>
-      <HomePage />
-    </Layout>
-  );
+  return <LandingWrapper />;
 }
