@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 const LoginForm = dynamic(
     () => import("./login-form").then(mod => ({ default: mod.LoginForm })),
-    { 
+    {
         ssr: false,
         loading: () => (
             <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
