@@ -1,9 +1,9 @@
-import DashboardClientLayout from "@/components/layout/DashboardClientLayout";
+import DashboardWrapper from "@/components/layout/DashboardWrapper";
 
 export default function DashboardLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    return <DashboardClientLayout>{children}</DashboardClientLayout>;
+    return <DashboardWrapper>{children}</DashboardWrapper>;
 }

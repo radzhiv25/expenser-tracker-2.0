@@ -24,29 +24,38 @@ export function useBreadcrumbs(): BreadcrumbItem[] {
     const pathname = usePathname();
 
     return useMemo(() => {
-        if (!pathname) {
+        // Return default breadcrumbs if pathname is undefined or not a string
+        if (!pathname || typeof pathname !== 'string') {
             return [{ label: "Home", href: "/" }];
         }
 
-        const segments = pathname.split("/").filter(Boolean);
-        const breadcrumbs: BreadcrumbItem[] = [
-            { label: "Home", href: "/" }
-        ];
+        try {
+            const segments = pathname.split("/").filter(Boolean);
+            const breadcrumbs: BreadcrumbItem[] = [
+                { label: "Home", href: "/" }
+            ];
 
-        let currentPath = "";
+            let currentPath = "";
 
-        for (const segment of segments) {
-            currentPath += `/${segment}`;
-            const label = routeMap[currentPath] || segment.charAt(0).toUpperCase() + segment.slice(1);
+            for (const segment of segments) {
+                if (typeof segment !== 'string') continue;
+                
+                currentPath += `/${segment}`;
+                const label = routeMap[currentPath] || (segment.charAt(0)?.toUpperCase() || '') + segment.slice(1);
 
-            breadcrumbs.push({
-                label,
-                href: currentPath,
-                isCurrentPage: currentPath === pathname
-            });
+                breadcrumbs.push({
+                    label,
+                    href: currentPath,
+                    isCurrentPage: currentPath === pathname
+                });
+            }
+
+            return breadcrumbs;
+        } catch (error) {
+            // Fallback to default breadcrumbs if any error occurs
+            console.warn('Error generating breadcrumbs:', error);
+            return [{ label: "Home", href: "/" }];
         }
-
-        return breadcrumbs;
     }, [pathname]);
 }
 
