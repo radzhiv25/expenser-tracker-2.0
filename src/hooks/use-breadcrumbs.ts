@@ -24,6 +24,10 @@ export function useBreadcrumbs(): BreadcrumbItem[] {
     const pathname = usePathname();
 
     return useMemo(() => {
+        if (!pathname) {
+            return [{ label: "Home", href: "/" }];
+        }
+
         const segments = pathname.split("/").filter(Boolean);
         const breadcrumbs: BreadcrumbItem[] = [
             { label: "Home", href: "/" }

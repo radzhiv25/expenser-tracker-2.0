@@ -268,20 +268,22 @@ export default function DashboardLayout({
                                 </button>
                                 <div className="min-w-0 flex-1">
                                     <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 truncate">
-                                        {pathname === '/dashboard' ? 'Dashboard' :
-                                            pathname === '/boards' ? 'Kanban Boards' :
-                                                pathname === '/expenses' ? 'Expenses' :
-                                                    pathname === '/prices' ? 'Price Tracking' :
-                                                        pathname === '/reports' ? 'Reports & Analytics' :
-                                                            pathname === '/settings' ? 'Settings' : 'Dashboard'}
+                                        {!pathname ? 'Dashboard' :
+                                            pathname === '/dashboard' ? 'Dashboard' :
+                                                pathname === '/boards' ? 'Kanban Boards' :
+                                                    pathname === '/expenses' ? 'Expenses' :
+                                                        pathname === '/prices' ? 'Price Tracking' :
+                                                            pathname === '/reports' ? 'Reports & Analytics' :
+                                                                pathname === '/settings' ? 'Settings' : 'Dashboard'}
                                     </h1>
                                     <p className="text-xs sm:text-sm text-gray-500 mt-1 hidden sm:block">
-                                        {pathname === '/dashboard' ? 'Overview and quick actions' :
-                                            pathname === '/boards' ? 'Manage your workflow with Kanban boards' :
-                                                pathname === '/expenses' ? 'Track and manage your expenses' :
-                                                    pathname === '/prices' ? 'Monitor price changes and trends' :
-                                                        pathname === '/reports' ? 'Comprehensive analytics and insights' :
-                                                            pathname === '/settings' ? 'Configure your application settings' : 'Welcome to your dashboard'}
+                                        {!pathname ? 'Welcome to your dashboard' :
+                                            pathname === '/dashboard' ? 'Overview and quick actions' :
+                                                pathname === '/boards' ? 'Manage your workflow with Kanban boards' :
+                                                    pathname === '/expenses' ? 'Track and manage your expenses' :
+                                                        pathname === '/prices' ? 'Monitor price changes and trends' :
+                                                            pathname === '/reports' ? 'Comprehensive analytics and insights' :
+                                                                pathname === '/settings' ? 'Configure your application settings' : 'Welcome to your dashboard'}
                                     </p>
                                 </div>
                             </div>
