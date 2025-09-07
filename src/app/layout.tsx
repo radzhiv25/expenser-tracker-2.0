@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Expense Tracker",
+  title: "Finboard",
   description: "Track and manage your expenses efficiently with our modern expense tracker app",
 };
 

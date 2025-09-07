@@ -14,18 +14,24 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { AuthService } from "@/lib/auth";
 
-const loginSchema = z.object({
+const signupSchema = z.object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Please enter a valid email address"),
     password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string().min(6, "Please confirm your password"),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type SignupFormData = z.infer<typeof signupSchema>;
 
-export function LoginForm({
+export function SignupForm({
     className,
     ...props
 }: React.ComponentProps<"div">) {
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
@@ -34,40 +40,43 @@ export function LoginForm({
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<LoginFormData>({
-        resolver: zodResolver(loginSchema),
+    } = useForm<SignupFormData>({
+        resolver: zodResolver(signupSchema),
     });
 
-    const onSubmit = async (data: LoginFormData) => {
+    const onSubmit = async (data: SignupFormData) => {
         setIsLoading(true);
         setError(null);
 
         try {
+            // Create new account
+            await AuthService.createAccount(data.email, data.password, data.name);
+            // After successful signup, automatically log in
             await AuthService.login(data.email, data.password);
             router.push('/dashboard');
         } catch (error: unknown) {
-            console.error('Authentication error:', error);
-            setError(error instanceof Error ? error.message : 'An error occurred during authentication');
+            console.error('Signup error:', error);
+            setError(error instanceof Error ? error.message : 'An error occurred during signup');
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleGoogleLogin = async () => {
+    const handleGoogleSignup = async () => {
         try {
             await AuthService.loginWithGoogle();
         } catch (error: unknown) {
-            console.error('Google login error:', error);
-            setError('Failed to login with Google');
+            console.error('Google signup error:', error);
+            setError('Failed to signup with Google');
         }
     };
 
-    const handleGitHubLogin = async () => {
+    const handleGitHubSignup = async () => {
         try {
             await AuthService.loginWithGitHub();
         } catch (error: unknown) {
-            console.error('GitHub login error:', error);
-            setError('Failed to login with GitHub');
+            console.error('GitHub signup error:', error);
+            setError('Failed to signup with GitHub');
         }
     };
 
@@ -76,7 +85,7 @@ export function LoginForm({
             <Card className="overflow-hidden p-0">
                 <CardContent className="grid p-0 md:grid-cols-2">
                     <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-8">
-                        <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-4">
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -86,9 +95,9 @@ export function LoginForm({
                                 <div className="flex items-center mb-4">
                                     <span className="text-2xl font-bold">Finboard</span>
                                 </div>
-                                <h1 className="text-2xl font-bold">Welcome back</h1>
+                                <h1 className="text-2xl font-bold">Create Account</h1>
                                 <p className="text-muted-foreground text-balance">
-                                    Login to your Finboard account
+                                    Sign up for your Finboard account
                                 </p>
                             </motion.div>
 
@@ -102,12 +111,30 @@ export function LoginForm({
                                 </motion.div>
                             )}
 
-
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.1 }}
-                                className="grid gap-3"
+                                className="grid gap-2"
+                            >
+                                <Label htmlFor="name">Full Name</Label>
+                                <Input
+                                    id="name"
+                                    type="text"
+                                    placeholder="John Doe"
+                                    {...register("name")}
+                                    className={errors.name ? "border-red-500" : ""}
+                                />
+                                {errors.name && (
+                                    <p className="text-sm text-red-500">{errors.name.message}</p>
+                                )}
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.15 }}
+                                className="grid gap-2"
                             >
                                 <Label htmlFor="email">Email</Label>
                                 <Input
@@ -126,21 +153,14 @@ export function LoginForm({
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.2 }}
-                                className="grid gap-3"
+                                className="grid gap-2"
                             >
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                    <a
-                                        href="#"
-                                        className="ml-auto text-sm underline-offset-2 hover:underline"
-                                    >
-                                        Forgot your password?
-                                    </a>
-                                </div>
+                                <Label htmlFor="password">Password</Label>
                                 <div className="relative">
                                     <Input
                                         id="password"
                                         type={showPassword ? "text" : "password"}
+                                        placeholder="Enter your password"
                                         {...register("password")}
                                         className={errors.password ? "border-red-500 pr-10" : "pr-10"}
                                     />
@@ -166,10 +186,44 @@ export function LoginForm({
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.25 }}
+                                className="grid gap-2"
+                            >
+                                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                                <div className="relative">
+                                    <Input
+                                        id="confirmPassword"
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        placeholder="Confirm your password"
+                                        {...register("confirmPassword")}
+                                        className={errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"}
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    >
+                                        {showConfirmPassword ? (
+                                            <EyeOff className="h-4 w-4" />
+                                        ) : (
+                                            <Eye className="h-4 w-4" />
+                                        )}
+                                    </Button>
+                                </div>
+                                {errors.confirmPassword && (
+                                    <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
+                                )}
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.3 }}
                             >
                                 <Button type="submit" className="w-full" disabled={isLoading}>
-                                    {isLoading ? "Signing in..." : "Login"}
+                                    {isLoading ? "Creating account..." : "Create Account"}
                                 </Button>
                             </motion.div>
 
@@ -194,7 +248,7 @@ export function LoginForm({
                                     variant="outline"
                                     type="button"
                                     className="w-full"
-                                    onClick={handleGoogleLogin}
+                                    onClick={handleGoogleSignup}
                                     disabled={isLoading}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-4 w-4 mr-2">
@@ -209,7 +263,7 @@ export function LoginForm({
                                     variant="outline"
                                     type="button"
                                     className="w-full"
-                                    onClick={handleGitHubLogin}
+                                    onClick={handleGitHubSignup}
                                     disabled={isLoading}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-4 w-4 mr-2">
@@ -228,23 +282,23 @@ export function LoginForm({
                                 transition={{ duration: 0.5, delay: 0.6 }}
                                 className="text-center text-sm"
                             >
-                                Don&apos;t have an account?{" "}
+                                Already have an account?{" "}
                                 <a
-                                    href="/signup"
+                                    href="/login"
                                     className="underline underline-offset-4 hover:text-blue-600"
                                 >
-                                    Sign up
+                                    Sign in
                                 </a>
                             </motion.div>
                         </div>
                     </form>
-                    <div className="bg-gradient-to-br from-blue-500 to-purple-600 relative hidden md:block">
+                    <div className="bg-gradient-to-br from-green-500 to-blue-600 relative hidden md:block">
                         <div className="absolute inset-0 bg-black/20"></div>
                         <div className="relative h-full flex items-center justify-center p-8">
                             <div className="text-center text-white">
-                                <h2 className="text-2xl font-bold mb-2">Track Your Expenses</h2>
-                                <p className="text-blue-100">
-                                    Take control of your finances with our powerful expense tracking tools.
+                                <h2 className="text-2xl font-bold mb-2">Join Finboard</h2>
+                                <p className="text-green-100">
+                                    Start tracking your expenses and take control of your financial future.
                                 </p>
                             </div>
                         </div>
