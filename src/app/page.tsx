@@ -1,5 +1,5 @@
-import LandingWrapper from "@/components/LandingWrapper";
+import SimpleLanding from "@/components/SimpleLanding";
 
 export default function LandingPage() {
-  return <LandingWrapper />;
+  return <SimpleLanding />;
 }

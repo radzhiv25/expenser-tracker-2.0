@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 const Layout = dynamic(
     () => import("./layout/Layout").then(mod => ({ default: mod.Layout })),
-    { 
+    {
         ssr: false,
         loading: () => (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -16,7 +16,7 @@ const Layout = dynamic(
 
 const HomePage = dynamic(
     () => import("./pages/HomePage").then(mod => ({ default: mod.HomePage })),
-    { 
+    {
         ssr: false,
         loading: () => (
             <div className="min-h-screen flex items-center justify-center">
