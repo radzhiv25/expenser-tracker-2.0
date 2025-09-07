@@ -39,7 +39,7 @@ export function useBreadcrumbs(): BreadcrumbItem[] {
 
             for (const segment of segments) {
                 if (typeof segment !== 'string') continue;
-                
+
                 currentPath += `/${segment}`;
                 const label = routeMap[currentPath] || (segment.charAt(0)?.toUpperCase() || '') + segment.slice(1);
 

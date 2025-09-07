@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 const DashboardClientLayout = dynamic(
     () => import("./DashboardClientLayout"),
-    { 
+    {
         ssr: false,
         loading: () => (
             <div className="min-h-screen flex items-center justify-center">
