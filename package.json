@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node api.js && next dev --turbopack",
-    "build": "node api.js && next build --turbopack",
-    "start": "node api.js && next start",
+    "dev": "node init && next dev --turbopack",
+    "build": "node init && next build --turbopack",
+    "start": "node init && next start",
     "lint": "eslint",
     "seed:appwrite": "tsx tools/seed-appwrite.ts",
     "check:appwrite": "tsx tools/check-appwrite.ts"
@@ -40,7 +40,7 @@
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.542.0",
-    "next": "15.5.2",
+    "next": "16.4.3",
     "next-themes": "^0.4.6",
     "react": "19.1.0",
     "react-day-picker": "^9.9.0",
